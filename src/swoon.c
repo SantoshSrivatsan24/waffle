@@ -3,6 +3,7 @@
 #include <string.h>
 #include "helpers.h"
 #include "window.h"
+#include "tile_manager.h"
 #include "tile.h"
 
 int g_connection;
@@ -14,23 +15,30 @@ int main(int argc, char **argv) {
     CGDirectDisplayID did = CGMainDisplayID();
     CGRect display = CGDisplayBounds(did);
     CGRect window_frame = CGRectInset(display, 300, 200);
-    CGRect tile_frame = (CGRect) {{10, 10}, {100, 200}};
 
     window_t *window = malloc (sizeof(window_t));
     memset(window, 0, sizeof(window_t));
 
-    tile_t *tile = malloc (sizeof(tile_t));
-    memset(tile, 0, sizeof(tile_t));
-
     window_init(window, window_frame);
-    tile_init(tile, tile_frame, 0xaf282c34, 0xaf56b6c2, 2, 10);
+
+    tile_manager_t *tile_manager = tile_manager_create();
+
+    CGSize tile1_size = {150, 250};
+    CGSize tile2_size = {250, 300};
+    CGSize tile3_size = {100, 100};
+    CGSize tile4_size = {150, 400};
+    tile_manager_create_tile (tile_manager, tile1_size, 0xaf282c34, 0xaf56b6c2, 4, 10);
+    tile_manager_create_tile (tile_manager, tile2_size, 0xaf282c34, 0xaf56b6c2, 4, 10);
+    tile_manager_create_tile (tile_manager, tile3_size, 0xaf282c34, 0xaf56b6c2, 4, 10);
+    tile_manager_create_tile (tile_manager, tile4_size, 0xaf282c34, 0xaf56b6c2, 4, 10);
+    tile_manager_compute_positions (window->render_frame, tile_manager);
 
     for (;;) {
         SLSDisableUpdate(g_connection);
         SLSOrderWindow(g_connection, window->id, -1, 0);
         CGContextClearRect(window->context, window->render_frame);
 
-        tile_render(window, tile);
+        tile_manager_render_tiles (window->context, tile_manager);
 
         CGContextFlush(window->context);
         SLSOrderWindow(g_connection, window->id, 1, 0);
@@ -39,5 +47,5 @@ int main(int argc, char **argv) {
         sleep(1);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -8,7 +8,7 @@ SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 CC = clang
-CFLAGS = -std=c99 -Wall
+CFLAGS = -std=c99 -Wall -g
 LDLIBS = -F/System/Library/PrivateFrameworks -framework Carbon -framework SkyLight
 
 .PHONY: all clean

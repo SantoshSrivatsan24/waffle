@@ -26,10 +26,14 @@ extern CGError CGSNewRegionWithRect(CGRect *rect, CFTypeRef *outRegion);
 
 typedef struct window 
 {
+    // Window properties
     uint32_t id;
     CGContextRef context;
     CGRect frame;
     CGRect render_frame;
+
+    // Tile information
+    CGPoint next_tile_origin;
 } window_t;
 
 void window_init (window_t *window, CGRect frame);

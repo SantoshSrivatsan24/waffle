@@ -10,9 +10,18 @@ color_t get_color_from_hex (uint32_t color) {
     return argb;
 }
 
-void tile_init (tile_t *tile, CGRect frame, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
+void *tile_create () {
 
-    tile->frame = CGRectInset(frame, border_width / 2, border_width / 2);
+    tile_t *tile = (tile_t *) malloc (sizeof(tile_t));
+    memset (tile, 0, sizeof(tile_t));
+    return tile;
+}
+
+void tile_init (tile_t *tile, int tid, CGSize tile_size, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
+
+    tile->tid = tid;
+    // `tile->frame` is calculated by the tile_manager
+    tile->frame.size = tile_size;
     tile->background = CGPathCreateMutable();
     tile->border = CGPathCreateMutable();
     tile->bg_color = get_color_from_hex(bg_color);
@@ -20,19 +29,21 @@ void tile_init (tile_t *tile, CGRect frame, uint32_t bg_color, uint32_t bd_color
     tile->border_width = border_width;
     tile->outer_corner_radius = corner_radius;
     tile->inner_corner_radius = corner_radius - border_width;
+}
+
+void tile_render (CGContextRef context, tile_t *tile) {
+
+    printf("Tile origin (x, y): (%f, %f), size (w, h): (%f, %f)\n", tile->frame.origin.x, tile->frame.origin.y, tile->frame.size.width, tile->frame.size.height);
 
     CGPathAddRoundedRect(tile->background, NULL, tile->frame, tile->inner_corner_radius, tile->inner_corner_radius);
+    CGContextAddPath(context, tile->background);
+    CGContextSetRGBFillColor(context, tile->bg_color.r, tile->bg_color.g, tile->bg_color.b, tile->bg_color.a);
+    CGContextFillPath(context);
+
     CGPathAddRoundedRect(tile->border, NULL, tile->frame, tile->outer_corner_radius, tile->outer_corner_radius);    
+    CGContextAddPath(context, tile->border);
+    CGContextSetRGBStrokeColor(context, tile->bd_color.r, tile->bd_color.g, tile->bd_color.b, tile->bd_color.a);
+    CGContextSetLineWidth(context, tile->border_width);
+    CGContextStrokePath(context);
 }
 
-void tile_render (window_t *window, tile_t *tile) {
-
-    CGContextAddPath(window->context, tile->background);
-    CGContextSetRGBFillColor(window->context, tile->bg_color.r, tile->bg_color.g, tile->bg_color.b, tile->bg_color.a);
-    CGContextFillPath(window->context);
-
-    CGContextAddPath(window->context, tile->border);
-    CGContextSetRGBStrokeColor(window->context, tile->bd_color.r, tile->bd_color.g, tile->bd_color.b, tile->bd_color.a);
-    CGContextSetLineWidth(window->context, tile->border_width);
-    CGContextStrokePath(window->context);
-}
