@@ -1,6 +1,6 @@
 #include "tile.h"
 
-color_t get_color_from_hex (uint32_t color) {
+static color_t get_color_from_hex (uint32_t color) {
 
     color_t argb;
     argb.a = ((color >> 0x18) & 0xff) / 255.0f;
@@ -17,11 +17,12 @@ void *tile_create () {
     return tile;
 }
 
-void tile_init (tile_t *tile, int tid, CGSize tile_size, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
+void tile_init (tile_t *tile, int tid, CGSize tile_size, position_t position, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
 
     tile->tid = tid;
     // `tile->frame` is calculated by the tile_manager
     tile->frame.size = tile_size;
+    tile->position = position;
     tile->background = CGPathCreateMutable();
     tile->border = CGPathCreateMutable();
     tile->bg_color = get_color_from_hex(bg_color);

@@ -24,8 +24,8 @@ extern CGError SLSSetWindowLevel(int cid, uint32_t wid, int level);
 extern CGContextRef SLWindowContextCreate(int cid, uint32_t wid, CFDictionaryRef options);
 extern CGError CGSNewRegionWithRect(CGRect *rect, CFTypeRef *outRegion);
 
-typedef struct window 
-{
+typedef struct {
+
     // Window properties
     uint32_t id;
     CGContextRef context;
