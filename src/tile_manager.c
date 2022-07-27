@@ -51,26 +51,19 @@ void tile_manager_order_tiles (tile_manager_t *tile_manager, CGRect base) {
         tile_t *relative_tile   = tile_manager->tiles[relative_tid];
 
         CGPoint origin;
+        CGFloat height_difference = 0.0f;
 
         switch (relative_position) {
             case POSITION_LEFT:     origin.x = relative_tile->frame.origin.x - current_tile->frame.size.width;
-                                    if (relative_tile->frame.size.height > current_tile->frame.size.height) {
-                                        int height_difference = relative_tile->frame.size.height - current_tile->frame.size.height;
-                                        origin.y = relative_tile->frame.origin.y + height_difference;
-                                    } else {
-                                        int height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
-                                        origin.y = relative_tile->frame.origin.y - height_difference;
-                                    }
+                                    height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
+                                    if (height_difference > 0 ) origin.y = relative_tile->frame.origin.y - height_difference;
+                                    else origin.y = relative_tile->frame.origin.y + height_difference;
                                     break;
 
             case POSITION_RIGHT:    origin.x = relative_tile->frame.origin.x + relative_tile->frame.size.width;
-                                    if (relative_tile->frame.size.height > current_tile->frame.size.height) {
-                                        int height_difference = relative_tile->frame.size.height - current_tile->frame.size.height;
-                                        origin.y = relative_tile->frame.origin.y + height_difference;
-                                    } else {
-                                        int height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
-                                        origin.y = relative_tile->frame.origin.y - height_difference;
-                                    }
+                                    height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
+                                    if (height_difference > 0 ) origin.y = relative_tile->frame.origin.y - height_difference;
+                                    else origin.y = relative_tile->frame.origin.y + height_difference;
                                     break;
 
             case POSITION_BELOW:    origin.x = relative_tile->frame.origin.x;
