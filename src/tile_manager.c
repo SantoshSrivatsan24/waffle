@@ -9,6 +9,7 @@ void *tile_manager_create () {
 
     tile_manager_t *tile_manager = (tile_manager_t *) malloc (sizeof(tile_manager_t));
     tile_manager->tiles = (tile_t **) malloc (sizeof(tile_t *));
+    memset (tile_manager, 0, sizeof(tile_manager_t));
     return tile_manager;
 }
 
@@ -29,7 +30,7 @@ void tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, u
     // Increase capacity by 1
     tile_manager->tiles = (tile_t **) realloc (tile_manager->tiles, sizeof(tile_t *) * (tile_manager->tile_count + 1));
     tile_manager->tiles[tile_manager->tile_count] = tile;
-    tile_manager->tile_count++;
+    tile_manager->tile_count += 1;
 }
 
 void tile_manager_render_tiles (CGContextRef context, tile_manager_t *tile_manager) {
