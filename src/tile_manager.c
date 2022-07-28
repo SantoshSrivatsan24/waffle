@@ -1,7 +1,6 @@
 // Manage the layout of tiles on screen
 
 #include "tile_manager.h"
-#include "stdio.h"
 
 static CGFloat get_tile_x (tile_t *tile);
 static CGFloat get_tile_y (tile_t *tile);
@@ -22,11 +21,11 @@ void tile_manager_destroy (tile_manager_t *tile_manager) {
     free (tile_manager);
 }
 
-int tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, position_t position, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
+int tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, position_t position, uint32_t bg_color, uint32_t bd_color, int padding, int border_width, int corner_radius) {
 
     tile_t *tile = tile_create ();
     int tid = tile_manager->tile_count;
-    tile_init (tile, tid, tile_size, position, bg_color, bd_color, border_width, corner_radius);
+    tile_init (tile, tid, tile_size, position, bg_color, bd_color, padding, border_width, corner_radius);
 
     tile_manager->tiles = (tile_t **) realloc (tile_manager->tiles, sizeof(tile_t *) * (tile_manager->tile_count + 1));
     tile_manager->tiles[tile_manager->tile_count] = tile;
