@@ -34,8 +34,6 @@ void tile_init (tile_t *tile, int tid, CGSize tile_size, position_t position, ui
 
 void tile_render (CGContextRef context, tile_t *tile) {
 
-    printf("Tile origin (x, y): (%f, %f), size (w, h): (%f, %f)\n", tile->frame.origin.x, tile->frame.origin.y, tile->frame.size.width, tile->frame.size.height);
-
     CGPathAddRoundedRect(tile->background, NULL, tile->frame, tile->inner_corner_radius, tile->inner_corner_radius);
     CGContextAddPath(context, tile->background);
     CGContextSetRGBFillColor(context, tile->bg_color.r, tile->bg_color.g, tile->bg_color.b, tile->bg_color.a);

@@ -32,24 +32,42 @@ int main(int argc, char **argv) {
 
     tile_manager_t *tile_manager = tile_manager_create();
 
-    CGSize tile1_size = {150, 250};
-    CGSize tile2_size = {250, 300};
-    CGSize tile3_size = {100, 100};
-    CGSize tile4_size = {150, 400};
+    CGSize tsize0 = {100, 150};
+    CGSize tsize1 = {50, 75};
+    CGSize tsize2 = {50, 75};
+    CGSize tsize3 = {50, 75};
+    CGSize tsize4 = {50, 75};
+    CGSize tsize5 = {50, 150};
+    CGSize tsize6 = {150, 50};
+    CGSize tsize7 = {100, 50};
 
     position_t tpos0 = {POSITION_LEFT, 0};
-    int tid0  = tile_manager_create_tile (tile_manager, tile1_size, tpos0, BACKGROUND, RED, 4, 10);
+    int tid0  = tile_manager_create_tile (tile_manager, tsize0, tpos0, BACKGROUND, TURQUOISE, 4, 10);
 
     position_t tpos1 = {POSITION_RIGHT, tid0};
-    int tid1 = tile_manager_create_tile (tile_manager, tile2_size, tpos1, BACKGROUND, GREEN, 4, 10);
+    int tid1 = tile_manager_create_tile (tile_manager, tsize1, tpos1, BACKGROUND, RED, 4, 10);
 
-    position_t tpos2 = {POSITION_BELOW, tid0};
-    int tid2 = tile_manager_create_tile (tile_manager, tile3_size, tpos2, BACKGROUND, YELLOW, 4, 10);
+    position_t tpos2 = {POSITION_RIGHT, tid1};
+    int tid2 = tile_manager_create_tile (tile_manager, tsize2, tpos2, BACKGROUND, GREEN, 4, 10);
 
-    position_t tpos3 = {POSITION_RIGHT, tid1};
-    int tid3 = tile_manager_create_tile (tile_manager, tile4_size, tpos3, BACKGROUND, BLUE, 4, 10);
+    position_t tpos3 = {POSITION_BELOW, tid1};
+    int tid3 = tile_manager_create_tile (tile_manager, tsize3, tpos3, BACKGROUND, BLUE, 4, 10);
+
+    position_t tpos4 = {POSITION_RIGHT, tid3};
+    int tid4 = tile_manager_create_tile (tile_manager, tsize4, tpos4, BACKGROUND, VIOLET, 4, 10);
+
+    position_t tpos5 = {POSITION_RIGHT, tid2};
+    int tid5 = tile_manager_create_tile (tile_manager, tsize5, tpos5, BACKGROUND, TURQUOISE, 4, 10);
+
+    position_t tpos6 = {POSITION_BELOW, tid0};
+    int tid6 = tile_manager_create_tile (tile_manager, tsize6, tpos6, BACKGROUND, TURQUOISE, 4, 10);
+
+    position_t tpos7= {POSITION_RIGHT, tid6};
+    int tid7 = tile_manager_create_tile (tile_manager, tsize7, tpos7, BACKGROUND, TURQUOISE, 4, 10);
+
 
     tile_manager_order_tiles (tile_manager, window->render_frame);
+    tile_manager_center_tiles (tile_manager, window->render_frame);
 
     for (;;) {
         SLSDisableUpdate(g_connection);

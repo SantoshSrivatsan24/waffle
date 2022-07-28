@@ -14,5 +14,5 @@ void *tile_manager_create ();
 void tile_manager_destroy (tile_manager_t *tile_manager);
 int tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, position_t position, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius);
 void tile_manager_order_tiles (tile_manager_t *tile_manager, CGRect base);
-void tile_manager_compute_positions (CGRect base, tile_manager_t *tile_manager);
+void tile_manager_center_tiles (tile_manager_t *tile_manager, CGRect base);
 void tile_manager_render_tiles (CGContextRef context, tile_manager_t *tile_manager);

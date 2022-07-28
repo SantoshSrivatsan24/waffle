@@ -3,7 +3,10 @@
 #include "tile_manager.h"
 #include "stdio.h"
 
-// static void tile_manager_compute_origin (window_t *window, tile_manager_t *tile_manager);
+static CGFloat get_tile_x (tile_t *tile);
+static CGFloat get_tile_y (tile_t *tile);
+static CGFloat get_tile_w (tile_t *tile);
+static CGFloat get_tile_h (tile_t *tile);
 
 void *tile_manager_create () {
 
@@ -21,14 +24,10 @@ void tile_manager_destroy (tile_manager_t *tile_manager) {
 
 int tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, position_t position, uint32_t bg_color, uint32_t bd_color, int border_width, int corner_radius) {
 
-    // Create a new tile
     tile_t *tile = tile_create ();
-
-    // Initialize tile
     int tid = tile_manager->tile_count;
     tile_init (tile, tid, tile_size, position, bg_color, bd_color, border_width, corner_radius);
 
-    // Increase capacity by 1
     tile_manager->tiles = (tile_t **) realloc (tile_manager->tiles, sizeof(tile_t *) * (tile_manager->tile_count + 1));
     tile_manager->tiles[tile_manager->tile_count] = tile;
     tile_manager->tile_count += 1;
@@ -36,68 +35,59 @@ int tile_manager_create_tile (tile_manager_t *tile_manager, CGSize tile_size, po
     return tid;
 }
 
+// Go over each tile one by one. Adjust its frame based on its position
 void tile_manager_order_tiles (tile_manager_t *tile_manager, CGRect base) {
 
-    // Go over each tile one by one. Adjust its frame based on its position
+    // The first tile is positioned on the parent's top left corner
     tile_manager->tiles[0]->frame.origin.x = base.origin.x;
     tile_manager->tiles[0]->frame.origin.y = CGRectGetMaxY(base) - tile_manager->tiles[0]->frame.size.height;
 
     for (int i = 1; i < tile_manager->tile_count; i++) {
 
-        enum position relative_position = tile_manager->tiles[i]->position.relative_position;
-        int relative_tid = tile_manager->tiles[i]->position.relative_tid;
-
-        tile_t *current_tile    = tile_manager->tiles[i];
-        tile_t *relative_tile   = tile_manager->tiles[relative_tid];
-
+        tile_t *current_tile  = tile_manager->tiles[i];
+        enum position relative_position = current_tile->position.relative_position;
+        int relative_tid = current_tile->position.relative_tid;
+        tile_t *relative_tile = tile_manager->tiles[relative_tid];
         CGPoint origin;
-        CGFloat height_difference = 0.0f;
 
         switch (relative_position) {
-            case POSITION_LEFT:     origin.x = relative_tile->frame.origin.x - current_tile->frame.size.width;
-                                    height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
-                                    if (height_difference > 0 ) origin.y = relative_tile->frame.origin.y - height_difference;
-                                    else origin.y = relative_tile->frame.origin.y + height_difference;
+            case POSITION_LEFT:     origin.x = get_tile_x (relative_tile) - get_tile_w (current_tile);
+                                    origin.y = get_tile_y (relative_tile) - (get_tile_h (current_tile) - get_tile_h (relative_tile));
                                     break;
 
-            case POSITION_RIGHT:    origin.x = relative_tile->frame.origin.x + relative_tile->frame.size.width;
-                                    height_difference = current_tile->frame.size.height - relative_tile->frame.size.height;
-                                    if (height_difference > 0 ) origin.y = relative_tile->frame.origin.y - height_difference;
-                                    else origin.y = relative_tile->frame.origin.y + height_difference;
+            case POSITION_RIGHT:    origin.x = get_tile_x (relative_tile) + get_tile_w (relative_tile);
+                                    origin.y = get_tile_y (relative_tile) - (get_tile_h (current_tile) - get_tile_h (relative_tile));
                                     break;
 
-            case POSITION_BELOW:    origin.x = relative_tile->frame.origin.x;
-                                    origin.y = relative_tile->frame.origin.y - current_tile->frame.size.height;
+            case POSITION_BELOW:    origin.x = get_tile_x (relative_tile);
+                                    origin.y = get_tile_y (relative_tile) - get_tile_h (current_tile);
                                     break;
 
-            case POSITION_ABOVE:    origin.x = relative_tile->frame.origin.x;
-                                    origin.y = relative_tile->frame.origin.y + relative_tile->frame.size.height + current_tile->frame.size.height;
+            case POSITION_ABOVE:    origin.x = get_tile_x (relative_tile);
+                                    origin.y = get_tile_y (relative_tile) + get_tile_h (relative_tile);
                                     break;
         }
-
         tile_manager->tiles[i]->frame.origin = origin;
     }
 }
 
 
-void tile_manager_compute_positions (CGRect base, tile_manager_t *tile_manager) {
+void tile_manager_center_tiles (tile_manager_t *tile_manager, CGRect base) {
 
     CGFloat total_width = base.size.width;
     CGFloat occupied_width = 0.0f;
 
     for (int i = 0; i < tile_manager->tile_count; i++) {
-        occupied_width += tile_manager->tiles[i]->frame.size.width;
+
+        tile_t *tile = tile_manager->tiles[i];
+        if (get_tile_y (tile) + get_tile_h (tile) == CGRectGetMaxY(base))
+            occupied_width += get_tile_w (tile);
     }
 
-    CGFloat gap_width = (total_width - occupied_width) / 2;
-    CGFloat x = total_width - gap_width;
-    CGFloat y;
+    CGFloat shift_x = (total_width - occupied_width) / 2;
 
-    for (int i = tile_manager->tile_count - 1; i >= 0; i--) {
-        x -= tile_manager->tiles[i]->frame.size.width;
-        y = base.size.height - tile_manager->tiles[i]->frame.size.height;
-        tile_manager->tiles[i]->frame.origin.x = x;
-        tile_manager->tiles[i]->frame.origin.y = y;
+    for (int i = 0; i < tile_manager->tile_count; i++) {
+        tile_manager->tiles[i]->frame.origin.x += shift_x;
     }
 }
 
@@ -108,6 +98,21 @@ void tile_manager_render_tiles (CGContextRef context, tile_manager_t *tile_manag
     }
 }
 
+static CGFloat get_tile_x (tile_t *tile) {
+    return tile->frame.origin.x;
+}
+
+static CGFloat get_tile_y (tile_t *tile) {
+    return tile->frame.origin.y;
+}
+
+static CGFloat get_tile_w (tile_t *tile) {
+    return tile->frame.size.width;
+}
+
+static CGFloat get_tile_h (tile_t *tile) {
+    return tile->frame.size.height;
+}
 
 
 
