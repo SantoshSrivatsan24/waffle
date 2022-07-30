@@ -10,6 +10,7 @@ OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 CC = clang
 CFLAGS = -std=c99 -Wall -g
 LDLIBS = -F/System/Library/PrivateFrameworks -framework Carbon -framework SkyLight
+LDLIBS += -lpthread
 
 .PHONY: all clean
 

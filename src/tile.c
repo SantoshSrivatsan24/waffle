@@ -33,7 +33,6 @@ void tile_init (tile_t *tile, int tid, CGSize tile_size, position_t position, ui
     tile->border.color = get_color_from_hex (bd_color);
     tile->border.corner_radius = corner_radius;
     tile->border.border_width = border_width;
-
 }
 
 void tile_render (CGContextRef context, tile_t *tile) {

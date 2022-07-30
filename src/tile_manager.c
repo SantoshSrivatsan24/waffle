@@ -2,10 +2,21 @@
 
 #include "tile_manager.h"
 
-static CGFloat get_tile_x (tile_t *tile);
-static CGFloat get_tile_y (tile_t *tile);
-static CGFloat get_tile_w (tile_t *tile);
-static CGFloat get_tile_h (tile_t *tile);
+static CGFloat get_tile_x (tile_t *tile) {
+    return tile->frame.origin.x;
+}
+
+static CGFloat get_tile_y (tile_t *tile) {
+    return tile->frame.origin.y;
+}
+
+static CGFloat get_tile_w (tile_t *tile) {
+    return tile->frame.size.width;
+}
+
+static CGFloat get_tile_h (tile_t *tile) {
+    return tile->frame.size.height;
+}
 
 void *tile_manager_create () {
 
@@ -70,10 +81,9 @@ void tile_manager_order_tiles (tile_manager_t *tile_manager, CGRect base) {
     }
 }
 
-
 void tile_manager_center_tiles (tile_manager_t *tile_manager, CGRect base) {
 
-    CGFloat total_width = base.size.width;
+    CGFloat total_width = CGRectGetMaxX(base);
     CGFloat occupied_width = 0.0f;
 
     for (int i = 0; i < tile_manager->tile_count; i++) {
@@ -97,21 +107,6 @@ void tile_manager_render_tiles (CGContextRef context, tile_manager_t *tile_manag
     }
 }
 
-static CGFloat get_tile_x (tile_t *tile) {
-    return tile->frame.origin.x;
-}
-
-static CGFloat get_tile_y (tile_t *tile) {
-    return tile->frame.origin.y;
-}
-
-static CGFloat get_tile_w (tile_t *tile) {
-    return tile->frame.size.width;
-}
-
-static CGFloat get_tile_h (tile_t *tile) {
-    return tile->frame.size.height;
-}
 
 
 
