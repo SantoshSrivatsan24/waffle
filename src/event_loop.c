@@ -1,3 +1,5 @@
+// The event loop takes care of events that come into the application
+
 #include "event_loop.h"
 
 static void *event_loop_run (void *args) {

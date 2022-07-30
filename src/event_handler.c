@@ -1,3 +1,6 @@
 #include "event_handler.h"
 
-// void handle_click ();
+EVENT_CALLBACK(EVENT_HANDLER_SPACE_CHANGED) {
+
+    printf ("Space changed!\n");
+}

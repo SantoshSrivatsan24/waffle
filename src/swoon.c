@@ -5,6 +5,8 @@
 #include "window.h"
 #include "tile_manager.h"
 #include "tile.h"
+#include "event_register.h"
+#include "event_handler.h"
 #include "event_loop.h"
 
 #define BACKGROUND  0xff282c34
@@ -18,17 +20,6 @@
 
 int g_connection;
 extern int RunApplicationEventLoop (void);
-
-OSStatus event_handler (EventHandlerCallRef ref, EventRef event, void *user_data) {
-
-    switch (GetEventKind (event)) {
-        case kEventMouseDown:   printf ("Mouse down\n");
-                                break;
-        case kEventMouseUp  :   printf ("Mouse up\n");
-                                break;             
-    }
-    return noErr;
-}
 
 int main(int argc, char **argv) {
 
@@ -97,10 +88,11 @@ int main(int argc, char **argv) {
     event_loop_t event_loop;
     event_loop_begin (&event_loop);
 
-    EventHandlerUPP handler = NewEventHandlerUPP (event_handler);
-    EventHandlerRef ref;
-    const EventTypeSpec type[2] = {{kEventClassMouse, kEventMouseDown}, {kEventClassMouse, kEventMouseUp}};
-    InstallApplicationEventHandler (handler, 2, type, NULL, &ref);
+    // Execute the function `global_handler` when the workspace changes
+    // `global_handler` starts the event handler for the individual events in a separate thread
+    // If we weren't using another thread to handle events, then we could pass the individual event handler
+    // to SLSRegisterNotifyProc
+    SLSRegisterNotifyProc (global_handler, kCGSWorkspaceDidChange, NULL);
        
     RunApplicationEventLoop();
 
