@@ -12,7 +12,7 @@ CFLAGS = -std=c99 -Wall -g
 LDLIBS = -F/System/Library/PrivateFrameworks -framework Carbon -framework SkyLight
 LDLIBS += -lpthread
 
-.PHONY: all clean
+.PHONY: all clean run-server run-client
 
 all: $(TARGET)
 
@@ -27,3 +27,9 @@ $(OBJ_DIR) $(BIN_DIR):
 
 clean:
 	@$(RM) -rv $(OBJ_DIR) $(BIN_DIR) 
+
+run-server: 
+	$(TARGET)
+
+run-client:
+	$(TARGET) -m --add tile 100 200

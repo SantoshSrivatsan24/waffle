@@ -42,7 +42,7 @@ static GLOBAL_CALLBACK (global_handler) {
     event_loop_signal (&g_event_loop);
 }
 
-static void parse_arguments (int argc, char *argv[]) {
+static void parse_arguments (int argc, char **argv) {
 
     int sockfd;
 
@@ -50,7 +50,7 @@ static void parse_arguments (int argc, char *argv[]) {
         perror ("waffle: failed to open socket.");
     }
 
-    int message_len = 0;
+    int message_len = argc;
     int argl[argc];
 
     for (int i = 1; i < argc; i++) {
@@ -67,13 +67,9 @@ static void parse_arguments (int argc, char *argv[]) {
 
         memcpy (temp, argv[i], argl[i]);
         temp += argl[i];
-        *temp++ = '\0';
+        *temp++ = ' ';
     }
     *temp++ = '\0';
-
-    printf("num args: %d\n", argc);
-    printf("message length: %d\n", message_len);
-    printf ("%s\n", message);
 
     socket_daemon_write (sockfd, message);
     socket_close (sockfd);
@@ -81,7 +77,7 @@ static void parse_arguments (int argc, char *argv[]) {
     exit (EXIT_SUCCESS);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
 
     struct sigaction sa;
     sa.sa_handler = sigint_handler;
