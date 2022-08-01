@@ -1,6 +1,7 @@
 // The event loop takes care of events that come into the application
 
 #include "event_loop.h"
+#include "event_handler.h"
 
 static void *event_loop_run (void *args) {
 
@@ -14,7 +15,7 @@ static void *event_loop_run (void *args) {
         // But how on earth do I detect an event????
 
         // TODO: Write a simple program that detects a mouse click using InstallEventHandler
-
+        EVENT_HANDLER_SPACE_CHANGED();
 
     }
     

@@ -100,7 +100,7 @@ void tile_manager_center_tiles (tile_manager_t *tile_manager, CGRect base) {
     }
 }
 
-void tile_manager_render_tiles (CGContextRef context, tile_manager_t *tile_manager) {
+void tile_manager_render_tiles (tile_manager_t *tile_manager, CGContextRef context) {
 
     for (int i = 0; i < tile_manager->tile_count; i++) {
         tile_render (context, tile_manager->tiles[i]);

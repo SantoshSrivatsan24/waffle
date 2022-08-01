@@ -6,6 +6,7 @@ BIN_DIR = bin
 TARGET = $(BIN_DIR)/swoon
 SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+SOCK_PATH = waffle.sock
 
 CC = clang
 CFLAGS = -std=c99 -Wall -g
@@ -26,4 +27,4 @@ $(OBJ_DIR) $(BIN_DIR):
 	mkdir -p $@
 
 clean:
-	@$(RM) -rv $(OBJ_DIR) $(BIN_DIR)
+	@$(RM) -rv $(OBJ_DIR) $(BIN_DIR) $(SOCK_PATH)
