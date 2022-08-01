@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include "helpers.h"
 #include "widget.h"
 #include "tile_manager.h"
@@ -10,7 +11,7 @@
 #include "event_loop.h"
 #include "socket.h"
 
-#define SOCK_PATH "waffle.sock"
+#define SOCK_PATH "waffle.socket"
 
 #define BACKGROUND  0xff282c34
 #define RED         0xffe06c75
@@ -22,19 +23,26 @@
 #define GREY        0xffabb2bf
 
 int g_connection;
+
 widget_t *widget;
 event_loop_t g_event_loop;
 daemon_t g_daemon;
+
+static void sigint_handler (int sig) {
+
+    printf ("waffle: interrupt.\n");
+    unlink (SOCK_PATH);
+    exit (EXIT_SUCCESS);
+}
 
 static GLOBAL_CALLBACK (global_handler) {
 
     // The arguments that the event handler needs are pushed onto a queue
     // TODO: implement memory pool and queue
     event_loop_signal (&g_event_loop);
-
 }
 
-static void parse_arguments (int argc, char ** argv) {
+static void parse_arguments (int argc, char *argv[]) {
 
     int sockfd;
 
@@ -42,14 +50,49 @@ static void parse_arguments (int argc, char ** argv) {
         perror ("waffle: failed to open socket.");
     }
 
-    for (int i = 0; i < argc; i++) {
-        socket_daemon_write (sockfd, argv[i]);
+    int message_len = 0;
+    int argl[argc];
+
+    for (int i = 1; i < argc; i++) {
+
+        argl[i] = strlen (argv[i]);
+        message_len += argl[i];
     }
+
+    char message[message_len];
+    char *temp = message;
+
+    // String together all of the command line arguments
+    for (int i = 1; i < argc; i++) {
+
+        memcpy (temp, argv[i], argl[i]);
+        temp += argl[i];
+        *temp++ = '\0';
+    }
+    *temp++ = '\0';
+
+    printf("num args: %d\n", argc);
+    printf("message length: %d\n", message_len);
+    printf ("%s\n", message);
+
+    socket_daemon_write (sockfd, message);
+    socket_close (sockfd);
 
     exit (EXIT_SUCCESS);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
+
+    struct sigaction sa;
+    sa.sa_handler = sigint_handler;
+    sa.sa_flags = 0;
+    sigemptyset (&sa.sa_mask);
+
+    if (sigaction (SIGINT, &sa, NULL) == -1) {
+        perror ("waffle: sigaction\n");
+        exit (EXIT_FAILURE);
+    }
+
 
     if (argc > 1) parse_arguments (argc, argv);
 

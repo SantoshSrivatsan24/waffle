@@ -1,8 +1,10 @@
 #include "socket.h"
 
-static void socket_close (int sockfd) {
-    shutdown (sockfd, SHUT_RDWR);
-    close (sockfd);
+
+
+static void socket_daemon_read (int sockfd, char *message) {
+
+
 }
 
 static void *socket_connection_handler (void *args) {
@@ -18,6 +20,7 @@ static void *socket_connection_handler (void *args) {
         int n = read (sockfd, message, 50);
         if (n) {
             printf ("%.*s\n", n, message);
+
         } else {
             socket_close (sockfd);
         }
@@ -34,6 +37,7 @@ bool socket_daemon_begin (daemon_t *daemon, char *sock_path) {
     struct sockaddr_un sockaddr;
     sockaddr.sun_family = AF_UNIX;
     strcpy (sockaddr.sun_path, sock_path);
+    unlink (sock_path);
 
     if ((bind (daemon->sockfd, (struct sockaddr *)&sockaddr, sizeof (sockaddr))) == -1) {
         return false;
@@ -65,4 +69,10 @@ bool socket_daemon_connect (int *sockfd, char *sock_path) {
 bool socket_daemon_write (int sockfd, char *message) {
 
     return write (sockfd, message, strlen(message));
+}
+
+void socket_close (int sockfd) {
+    
+    shutdown (sockfd, SHUT_RDWR);
+    close (sockfd);
 }

@@ -20,3 +20,4 @@ typedef struct {
 bool socket_daemon_begin (daemon_t *daemon, char *sock_path);
 bool socket_daemon_connect (int *sockfd, char *sock_path);
 bool socket_daemon_write (int sockfd, char *message);
+void socket_close (int sockfd);
